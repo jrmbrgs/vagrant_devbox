@@ -1,0 +1,48 @@
+server {
+    listen 80;
+    server_name back.jb.o.cc;
+
+    root   /o/yo/backs/;
+    access_log /var/log/nginx/back.o.cc.access.log;
+    error_log /var/log/nginx/back.o.cc.error.log; 
+    #autoindex off;
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		# Uncomment to enable naxsi on this location
+		# include /etc/nginx/naxsi.rules
+        index index.html index.htm index.php;
+        try_files $uri $uri/ /index.php;
+        fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+        include       fastcgi_params;
+        #MAJE rewrite
+        rewrite ^/maje/(.*)/product/(.*)$  /maje/ps.php?l=$1&sku=$2 last;
+    }
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_index index.php;
+		include fastcgi_params;
+        fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+        
+        fastcgi_param O_ENV_TYPE dev;
+        fastcgi_param O_ROOT_ADI '/o/';
+        fastcgi_param YO_FRONT_ROOT_WEB_ADI 'front.jb.o.cc/';
+        fastcgi_param YO_BIRTHLIST_FRONT_ROOT_WEB_ADI 'birthlist.jb.o.cc/';
+        fastcgi_param YO_BACK_ROOT_WEB_ADI 'back.jb.o.cc/';
+        fastcgi_param YO_EMERCH_ROOT_WEB_ADI 'emerch.jb.o.cc/';
+        fastcgi_param YO_CART_ROOT_WEB_ADI 'cart.jb.o.cc/';
+        fastcgi_param YO_ASSET_ROOT_WEB_ADI 'assets.jb.o.cc:81/';
+        fastcgi_param YO_MEDIA_ROOT_WEB_ADI 'media.jb.o.cc:82/';
+        fastcgi_param YO_WS_ROOT_WEB_ADI 'ws.jb.o.cc:83/';
+        fastcgi_param PHP_VALUE "error_log=/var/log/nginx/php.error.log";
+	}
+
+	# deny access to .htaccess files, if Apache's document root
+	# concurs with nginx's one
+	#location ~ /\.ht {
+	#	deny all;
+	#}
+}

@@ -12,7 +12,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.omnibus.chef_version = :latest
 
     config.vm.provision :chef_solo do |chef|
-        chef.cookbooks_path = "/home/jerome/rd/chef/cookbooks"
+        chef.cookbooks_path = "chef/cookbooks"
+        chef.custom_config_path = "chef.conf"
+
         chef.json = { 
             :apache => {
                 :default_site_enabled => true, # just for testing
@@ -24,11 +26,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         chef.add_recipe "build-essential"
         chef.add_recipe "vim"
         chef.add_recipe "git"
+        chef.add_recipe "chef-dotdeb::php54"
+        chef.add_recipe "php"
         chef.add_recipe "apache2"
-        chef.add_recipe "nginx"
-       #chef.add_recipe "apache2::mod_rewrite"
-       #chef.add_recipe "apache2::mod_php5"
+        chef.add_recipe "apache2::mod_rewrite"
+        chef.add_recipe "apache2::mod_php5"
+        chef.add_recipe "mysql::server"
+        chef.add_recipe "mysql::client"
+       #chef.add_recipe "nginx"
        #chef.add_recipe "nodejs"
-       #chef.add_recipe "mysql"
     end
 end
